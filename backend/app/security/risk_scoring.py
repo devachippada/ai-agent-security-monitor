@@ -24,18 +24,17 @@ from the structured findings below, so it is a faithful, safe
 explanation of the decision rather than a free-form model rationale.
 """
 from dataclasses import dataclass, field
-from typing import Optional
 
 from app.config import (
     RISK_LEVEL_THRESHOLDS,
     TOOL_RISK_LEVELS,
     TOOL_RISK_SCORE,
 )
-from app.security.prompt_injection import InjectionResult
-from app.security.sensitive_data import SensitiveDataResult
+from app.security.anomaly import AnomalyResult
 from app.security.exfiltration import ExfiltrationResult
 from app.security.policy_engine import PolicyResult
-from app.security.anomaly import AnomalyResult
+from app.security.prompt_injection import InjectionResult
+from app.security.sensitive_data import SensitiveDataResult
 
 # Weights for the five always-on Phase-1 components (sum to 1.0).
 _WEIGHTS = {
@@ -81,9 +80,9 @@ def evaluate_risk(
     sensitive: SensitiveDataResult,
     exfiltration: ExfiltrationResult,
     policy: PolicyResult,
-    tool_name: Optional[str],
+    tool_name: str | None,
     role: str,
-    anomaly: Optional[AnomalyResult] = None,
+    anomaly: AnomalyResult | None = None,
 ) -> RiskDecision:
     tool_risk_level = TOOL_RISK_LEVELS.get(tool_name, "LOW") if tool_name else "LOW"
     tool_base_score = TOOL_RISK_SCORE.get(tool_risk_level, 10)

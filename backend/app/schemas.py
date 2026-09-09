@@ -1,12 +1,12 @@
 """Pydantic request/response schemas for the API."""
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
 
 
 class ChatRequest(BaseModel):
-    session_id: Optional[str] = None
+    session_id: str | None = None
     user_id: str
     message: str = Field(..., min_length=1, max_length=4000)
 
@@ -15,7 +15,7 @@ class SignalScore(BaseModel):
     name: str
     score: float
     triggered: bool
-    reason: Optional[str] = None
+    reason: str | None = None
 
 
 class SecurityEvaluation(BaseModel):
@@ -30,8 +30,8 @@ class SecurityEvaluation(BaseModel):
     sensitive_data_findings: list[str]
     exfiltration_findings: list[str]
     policy_findings: list[str]
-    anomaly_score: Optional[float] = None
-    anomaly_explanation: Optional[str] = None
+    anomaly_score: float | None = None
+    anomaly_explanation: str | None = None
     detection_types: list[str]
     reasoning_summary: str
 
@@ -40,8 +40,8 @@ class ChatResponse(BaseModel):
     event_id: str
     session_id: str
     reply: str
-    tool_name: Optional[str] = None
-    tool_result: Optional[Any] = None
+    tool_name: str | None = None
+    tool_result: Any | None = None
     security: SecurityEvaluation
     latency_ms: float
 
@@ -49,26 +49,26 @@ class ChatResponse(BaseModel):
 class EventOut(BaseModel):
     event_id: str
     timestamp: datetime
-    session_id: Optional[str]
-    user_id: Optional[str]
-    agent_id: Optional[str]
-    event_type: Optional[str]
-    prompt: Optional[str]
-    tool_name: Optional[str]
-    tool_arguments: Optional[str]
-    api_endpoint: Optional[str]
-    response: Optional[str]
+    session_id: str | None
+    user_id: str | None
+    agent_id: str | None
+    event_type: str | None
+    prompt: str | None
+    tool_name: str | None
+    tool_arguments: str | None
+    api_endpoint: str | None
+    response: str | None
     risk_score: float
     risk_level: str
-    detection_reason: Optional[str]
-    detection_type: Optional[str]
+    detection_reason: str | None
+    detection_type: str | None
     action: str
     blocked: bool
     latency_ms: float
-    injection_classification: Optional[str]
-    injection_score: Optional[float]
-    anomaly_score: Optional[float]
-    trace: Optional[str] = None
+    injection_classification: str | None
+    injection_score: float | None
+    anomaly_score: float | None
+    trace: str | None = None
 
     class Config:
         from_attributes = True
@@ -76,10 +76,10 @@ class EventOut(BaseModel):
 
 class AlertOut(BaseModel):
     alert_id: str
-    event_id: Optional[str]
+    event_id: str | None
     severity: str
     title: str
-    description: Optional[str]
+    description: str | None
     created_at: datetime
     resolved: bool
 
@@ -93,9 +93,9 @@ class PolicyOut(BaseModel):
     risk_level: str
     allowed_roles: str
     requires_approval: bool
-    max_calls_per_session: Optional[int]
+    max_calls_per_session: int | None
     block_threshold: int
-    description: Optional[str]
+    description: str | None
     enabled: bool
 
     class Config:
@@ -103,11 +103,11 @@ class PolicyOut(BaseModel):
 
 
 class PolicyUpdate(BaseModel):
-    requires_approval: Optional[bool] = None
-    max_calls_per_session: Optional[int] = None
-    block_threshold: Optional[int] = None
-    enabled: Optional[bool] = None
-    allowed_roles: Optional[list[str]] = None
+    requires_approval: bool | None = None
+    max_calls_per_session: int | None = None
+    block_threshold: int | None = None
+    enabled: bool | None = None
+    allowed_roles: list[str] | None = None
 
 
 class AttackScenarioOut(BaseModel):
@@ -121,4 +121,4 @@ class AttackScenarioOut(BaseModel):
 
 class RunScenarioRequest(BaseModel):
     scenario_id: str
-    user_id: Optional[str] = None
+    user_id: str | None = None

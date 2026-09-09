@@ -18,6 +18,10 @@ frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 
+# Built frontend baked into the backend image by the Dockerfile at build
+# time (see main.py's static-files/SPA-fallback block) -- not source.
+backend/static/
+
 # --- Logs from start.sh ---
 backend.log
 frontend.log

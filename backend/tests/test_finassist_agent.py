@@ -1,4 +1,4 @@
-from app.agent.finassist import propose_action, execute_tool
+from app.agent.finassist import execute_tool, propose_action
 
 
 def test_balance_intent_maps_to_get_account_balance():

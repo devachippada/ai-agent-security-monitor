@@ -9,19 +9,25 @@ tool and returns a result. Nothing in app/agent/finassist.py talks to
 the database or "executes" anything directly.
 """
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from sqlalchemy.orm import Session as DBSession
 
 from app.agent import finassist
-from app.security.prompt_injection import analyze_prompt
-from app.security.sensitive_data import scan_text
+from app.logging_service import (
+    log_event,
+    log_model_prediction,
+    log_tool_call,
+    maybe_create_alert,
+)
+from app.models import Event, User
+from app.models import Session as SessionModel
+from app.security.anomaly import get_anomaly_detector
 from app.security.exfiltration import analyze_tool_call
 from app.security.policy_engine import evaluate_policy
+from app.security.prompt_injection import analyze_prompt
 from app.security.risk_scoring import evaluate_risk
-from app.security.anomaly import get_anomaly_detector, FEATURE_NAMES
-from app.logging_service import log_event, log_tool_call, maybe_create_alert, log_model_prediction
-from app.models import Event, User, Session as SessionModel
+from app.security.sensitive_data import scan_text
 
 AGENT_NAME_ID = "finassist-v1"
 
@@ -51,7 +57,7 @@ def compute_session_features(db: DBSession, session_id: str) -> dict:
 
     return {
         "tool_calls_in_session": float(len(tool_calls)),
-        "distinct_tools_in_session": float(len(set(e.tool_name for e in tool_calls))),
+        "distinct_tools_in_session": float(len({e.tool_name for e in tool_calls})),
         "high_risk_calls_in_session": float(len(high_risk)),
         "seconds_since_last_action": float(seconds_since_last),
         "blocked_actions_in_session": float(len(blocked)),

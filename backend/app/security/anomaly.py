@@ -9,15 +9,14 @@ other code changes.
 """
 import json
 from dataclasses import dataclass, field
-from typing import Optional
 
 import joblib
 import numpy as np
 
 from app.config import (
+    ISOLATION_FOREST_META_PATH,
     ISOLATION_FOREST_MODEL_PATH,
     ISOLATION_FOREST_SCALER_PATH,
-    ISOLATION_FOREST_META_PATH,
 )
 
 FEATURE_NAMES = [
@@ -35,7 +34,7 @@ FEATURE_NAMES = [
 @dataclass
 class AnomalyResult:
     available: bool
-    anomaly_score: Optional[float] = None  # 0-100, higher = more anomalous
+    anomaly_score: float | None = None  # 0-100, higher = more anomalous
     is_anomalous: bool = False
     explanation: str = ""
     raw_features: dict = field(default_factory=dict)
@@ -55,7 +54,11 @@ class AnomalyDetector:
                 self.scaler = joblib.load(ISOLATION_FOREST_SCALER_PATH)
                 if ISOLATION_FOREST_META_PATH.exists():
                     self.meta = json.loads(ISOLATION_FOREST_META_PATH.read_text())
-            except Exception:
+            except Exception:  # noqa: BLE001 -- deliberately broad: joblib/json can
+                # fail in many different ways (corrupt pickle, truncated file, bad
+                # JSON, ...); any of them should degrade to "model unavailable"
+                # rather than crash the whole app, so callers check is_available
+                # and the gateway just skips the anomaly signal.
                 self.model = None
                 self.scaler = None
 
@@ -107,7 +110,7 @@ class AnomalyDetector:
         )
 
 
-_detector: Optional[AnomalyDetector] = None
+_detector: AnomalyDetector | None = None
 
 
 def get_anomaly_detector() -> AnomalyDetector:

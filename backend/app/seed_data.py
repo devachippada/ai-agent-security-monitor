@@ -5,9 +5,9 @@ Safe to call repeatedly -- it no-ops if data already exists.
 """
 from sqlalchemy.orm import Session as DBSession
 
-from app.models import User, Agent
-from app.agent.synthetic_data import CUSTOMERS
 from app.agent.finassist import TOOLS
+from app.agent.synthetic_data import CUSTOMERS
+from app.models import Agent, User
 from app.security.policy_engine import get_or_create_policy
 
 FINASSIST_AGENT_ID = "finassist-v1"

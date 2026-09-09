@@ -10,12 +10,12 @@ from pathlib import Path
 _TEST_DB_DIR = tempfile.mkdtemp(prefix="security_monitor_test_")
 os.environ["SECURITY_MONITOR_DB"] = str(Path(_TEST_DB_DIR) / "test.db")
 
-import pytest  # noqa: E402
-from fastapi.testclient import TestClient  # noqa: E402
+import pytest
+from fastapi.testclient import TestClient
 
-from app.main import app  # noqa: E402
-from app.database import Base, engine, SessionLocal  # noqa: E402
-from app import seed_data  # noqa: E402
+from app import seed_data
+from app.database import Base, SessionLocal, engine
+from app.main import app
 
 
 @pytest.fixture(scope="session", autouse=True)

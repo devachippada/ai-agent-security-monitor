@@ -10,7 +10,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session as DBSession
 
 from app.database import get_db
-from app.models import Event, Alert, ToolCall, Session as SessionModel, ModelPrediction
+from app.models import Alert, Event, ModelPrediction, ToolCall
+from app.models import Session as SessionModel
 
 router = APIRouter(prefix="/api", tags=["dashboard"])
 

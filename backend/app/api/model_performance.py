@@ -15,11 +15,11 @@ import pandas as pd
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session as DBSession
 
+from app.config import ISOLATION_FOREST_META_PATH, MODELS_DIR, SECURITY_PROMPTS_CSV
 from app.database import get_db
 from app.models import ModelPrediction
-from app.config import SECURITY_PROMPTS_CSV, MODELS_DIR, ISOLATION_FOREST_META_PATH
-from app.security.prompt_injection import analyze_prompt
 from app.security.anomaly import get_anomaly_detector
+from app.security.prompt_injection import analyze_prompt
 
 router = APIRouter(prefix="/api", tags=["model-performance"])
 

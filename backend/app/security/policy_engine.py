@@ -11,12 +11,11 @@ detectors.
 """
 import json
 from dataclasses import dataclass, field
-from typing import Optional
 
 from sqlalchemy.orm import Session as DBSession
 
-from app.models import Policy, ToolCall
 from app.config import TOOL_RISK_LEVELS
+from app.models import Policy, ToolCall
 
 # Per-session call budgets for the more sensitive tools. This gives the
 # gateway a deterministic, explainable "excessive tool usage" guard in

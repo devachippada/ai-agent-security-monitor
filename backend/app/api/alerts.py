@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session as DBSession
 from sqlalchemy import desc
+from sqlalchemy.orm import Session as DBSession
 
 from app.database import get_db
 from app.models import Alert

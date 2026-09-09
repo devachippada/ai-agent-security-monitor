@@ -12,7 +12,7 @@ Usage:
 import argparse
 import json
 import random
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import joblib
 import numpy as np
@@ -20,12 +20,12 @@ from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
 from app.config import (
+    ISOLATION_FOREST_META_PATH,
     ISOLATION_FOREST_MODEL_PATH,
     ISOLATION_FOREST_SCALER_PATH,
-    ISOLATION_FOREST_META_PATH,
 )
 from app.security.anomaly import FEATURE_NAMES
-from app.security.synthetic_sessions import generate_normal_session, features_to_vector
+from app.security.synthetic_sessions import features_to_vector, generate_normal_session
 
 MODEL_VERSION = "1.0"
 
@@ -65,7 +65,7 @@ def main():
 
     meta = {
         "version": MODEL_VERSION,
-        "trained_at": datetime.now(timezone.utc).isoformat(),
+        "trained_at": datetime.now(UTC).isoformat(),
         "n_training_samples": args.n_samples,
         "contamination": args.contamination,
         "feature_names": FEATURE_NAMES,

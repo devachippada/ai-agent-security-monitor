@@ -22,13 +22,12 @@ import base64
 import binascii
 import re
 from dataclasses import dataclass, field
-from typing import Optional
 
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from app.config import SECURITY_PROMPTS_CSV, INJECTION_CLASSIFICATION_THRESHOLDS
+from app.config import INJECTION_CLASSIFICATION_THRESHOLDS, SECURITY_PROMPTS_CSV
 
 
 @dataclass
@@ -36,7 +35,7 @@ class Signal:
     name: str
     score: float  # 0.0 - 1.0
     triggered: bool
-    reason: Optional[str] = None
+    reason: str | None = None
 
 
 @dataclass
@@ -248,13 +247,12 @@ def _encoded_content_signal(text: str) -> Signal:
     )
 
 
-def _dangerous_tool_mention_signal(text: str, requested_tool: Optional[str]) -> Signal:
+def _dangerous_tool_mention_signal(text: str, requested_tool: str | None) -> Signal:
     """
     Flag prompts that explicitly ask for a HIGH/CRITICAL risk action
     combined with urgency/pressure language -- a common social-engineering
     pattern ("do it now, no questions asked").
     """
-    from app.config import TOOL_RISK_LEVELS
 
     high_risk_tool_words = {
         "issue_refund": ["refund"],
@@ -322,7 +320,7 @@ class CorpusSimilarityScorer:
         return Signal(name="corpus_similarity", score=best_score, triggered=triggered, reason=reason)
 
 
-_corpus_scorer: Optional[CorpusSimilarityScorer] = None
+_corpus_scorer: CorpusSimilarityScorer | None = None
 
 
 def get_corpus_scorer() -> CorpusSimilarityScorer:
@@ -358,7 +356,7 @@ _PATTERN_SIGNAL_NAMES = (
 )
 
 
-def analyze_prompt(text: str, requested_tool: Optional[str] = None) -> InjectionResult:
+def analyze_prompt(text: str, requested_tool: str | None = None) -> InjectionResult:
     signals: list[Signal] = []
 
     for name in _PATTERN_SIGNAL_NAMES:

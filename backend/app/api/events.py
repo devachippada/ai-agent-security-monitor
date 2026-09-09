@@ -3,10 +3,10 @@ import json
 
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session as DBSession
 from sqlalchemy import desc
+from sqlalchemy.orm import Session as DBSession
 
-from app.database import get_db, SessionLocal
+from app.database import SessionLocal, get_db
 from app.models import Event
 from app.schemas import EventOut
 

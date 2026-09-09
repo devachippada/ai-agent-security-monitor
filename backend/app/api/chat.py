@@ -1,10 +1,10 @@
-import json
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session as DBSession
 
 from app.database import get_db
-from app.models import User, Session as SessionModel
+from app.models import Session as SessionModel
+from app.models import User
 from app.schemas import ChatRequest, ChatResponse, SecurityEvaluation, SignalScore
 from app.security.gateway import process_chat_message
 from app.seed_data import FINASSIST_AGENT_ID

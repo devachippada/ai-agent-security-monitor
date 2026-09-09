@@ -1,5 +1,7 @@
 # AI Agent Security Monitor
 
+[![CI](https://github.com/devachippada/ai-agent-security-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/devachippada/ai-agent-security-monitor/actions/workflows/ci.yml)
+
 A working local security-monitoring platform for AI agents, built around a
 simulated customer-support/finance agent called **FinAssist**. Every prompt
 FinAssist receives, and every tool it wants to call, passes through a
@@ -152,6 +154,39 @@ cd backend
 source venv/bin/activate
 pytest -v
 ```
+
+---
+
+## Deploying a live demo
+
+`Dockerfile` (repo root) builds the whole app as **one container**: a stage
+builds the React frontend, then the backend stage generates the labeled
+dataset and trains + evaluates the anomaly model (same seeded, deterministic
+commands as `start.sh`), and finally bakes the built frontend into
+`backend/static`, which `app/main.py` serves alongside the API from the same
+FastAPI process on `$PORT`. One service, one URL, no CORS or API-base-URL
+configuration needed -- the frontend already calls a same-origin `/api` (see
+`frontend/src/api/client.ts`).
+
+This was verified end-to-end in this environment (the actual `docker build`
+itself couldn't run here due to a sandbox network restriction on pulling
+base images, so the exact steps the Dockerfile runs -- frontend build,
+dataset/model generation, and the backend serving the built frontend with a
+proper SPA fallback and correct 404s on bad `/api/*` paths -- were verified
+directly against a running server instead; the Dockerfile a straight
+translation of those verified commands).
+
+**On Railway** (or any host that builds a Dockerfile from a GitHub repo):
+create a new project, point it at this repository, and it auto-detects and
+builds `Dockerfile` from the repo root -- no other configuration is
+required. The container is stateless (SQLite lives in the container's own
+ephemeral filesystem), which is a deliberate choice for a public demo: every
+redeploy/restart comes back freshly seeded rather than accumulating data
+from random visitors. Attach a persistent volume at `/app/backend/data`
+first if you want the database to survive restarts instead.
+
+Locally: `docker build -t aism . && docker run -p 8000:8000 aism`, then open
+`http://localhost:8000`.
 
 ---
 
@@ -334,16 +369,25 @@ never your dev database).
 passing): the API client, both badge components, `ChatPage`, and
 `DashboardPage`. Run with `npx vitest run` from `frontend/`.
 
+**Lint**: `ruff check .` from `backend/` (config in `backend/ruff.toml` --
+deliberately narrower than ruff's full default rule set; the file explains
+the two categories left out and why), `npm run lint` (oxlint) from
+`frontend/`. Both run in CI on every push -- see
+`.github/workflows/ci.yml`, which runs lint + tests + build for both
+backend and frontend on every push and pull request.
+
 ---
 
 ## Project structure
 
 ```
 ai-agent-security-monitor/
-  start.sh                     # one-command startup
+  start.sh                     # one-command local startup
+  Dockerfile / .dockerignore   # single-container production build (see "Deploying a live demo")
+  .github/workflows/ci.yml     # lint + test + build, backend and frontend, on every push
   backend/
     app/
-      main.py                  # FastAPI app + lifespan (create tables, seed)
+      main.py                  # FastAPI app + lifespan (create tables, seed) + static/SPA serving
       models.py / schemas.py   # SQLAlchemy models / Pydantic schemas
       agent/                   # FinAssist intent parser + synthetic data
       security/                # every detector + the gateway + risk scoring
@@ -352,8 +396,9 @@ ai-agent-security-monitor/
       seed_data.py
     data/security_prompts.csv  # labeled corpus (135 rows)
     scripts/build_dataset.py   # regenerates the corpus
-    models/                    # trained Isolation Forest artifacts (Phase 2)
+    models/                    # trained Isolation Forest artifacts (Phase 2, gitignored -- generated)
     train_model.py / evaluate_model.py   # Phase 2
+    ruff.toml                  # lint config (documents the rules left out, and why)
     tests/                     # pytest suite
   frontend/
     src/

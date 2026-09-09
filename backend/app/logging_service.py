@@ -7,11 +7,10 @@ approval), giving a complete, queryable audit trail. High-risk events
 also spawn an Alert row.
 """
 import json
-from datetime import datetime
 
 from sqlalchemy.orm import Session as DBSession
 
-from app.models import Event, ToolCall, Alert, ModelPrediction
+from app.models import Alert, Event, ModelPrediction, ToolCall
 
 
 def log_event(

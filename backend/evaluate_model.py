@@ -19,7 +19,7 @@ Usage:
 import argparse
 import json
 import random
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import joblib
 import numpy as np
@@ -30,9 +30,9 @@ from app.config import (
     MODELS_DIR,
 )
 from app.security.synthetic_sessions import (
-    generate_normal_session,
-    generate_abnormal_session,
     features_to_vector,
+    generate_abnormal_session,
+    generate_normal_session,
 )
 
 EVAL_REPORT_PATH = MODELS_DIR / "evaluation_report.json"
@@ -99,7 +99,7 @@ def main():
         return {"features": feats, "decision_function": decision, "is_anomalous": pred == -1, "anomaly_score": round(anomaly_score, 2)}
 
     report = {
-        "evaluated_at": datetime.now(timezone.utc).isoformat(),
+        "evaluated_at": datetime.now(UTC).isoformat(),
         "n_normal_tested": len(normal_samples),
         "n_abnormal_tested": len(abnormal_samples),
         "false_positive_rate": round(false_positive_rate, 4),

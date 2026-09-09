@@ -1,8 +1,9 @@
 import json
 
-from app.security.policy_engine import get_or_create_policy, evaluate_policy
-from app.models import Session as SessionModel, User
 from app.logging_service import log_event, log_tool_call
+from app.models import Session as SessionModel
+from app.models import User
+from app.security.policy_engine import evaluate_policy, get_or_create_policy
 
 
 def test_critical_tool_requires_approval_by_default(db_session):

@@ -1,0 +1,39 @@
+# Explicit ruff config so lint results are stable across ruff versions
+# (ruff's un-pinned "default" rule set has changed between releases) rather
+# than depending on whatever happens to be installed.
+
+target-version = "py311"
+line-length = 120
+
+[lint]
+# Deliberately narrower than ruff's full default: F (pyflakes) catches real
+# bugs -- unused imports/vars, undefined names, unreachable code. I/UP/SIM/C4
+# are safe modernization/style rules. Full pycodestyle ("E", including
+# line-length) and flake8-datetimez ("DTZ") are left out on purpose -- see
+# the two notes below.
+select = [
+    "F",   # pyflakes (real bugs: unused imports/vars, undefined names, ...)
+    "I",   # import sorting
+    "B",   # flake8-bugbear (common footguns)
+    "UP",  # pyupgrade (modern Python idioms)
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    # FastAPI's `Depends(...)` in a parameter default is the documented,
+    # idiomatic way its dependency-injection system works -- not the mutable-
+    # default-argument footgun this rule exists to catch. See every
+    # app/api/*.py router.
+    "B008",
+]
+
+# "E" (pycodestyle, mainly E501 line-length) is not selected above: this
+# codebase has many single-line data literals (synthetic transactions/test
+# fixtures) and long descriptive strings/regexes that are more readable
+# unwrapped than mechanically split. "DTZ" (flake8-datetimez) is not
+# selected either: the whole app stores and compares naive UTC timestamps
+# consistently (see the `default=datetime.utcnow` columns in
+# app/models.py) -- switching a couple of call sites to timezone-aware
+# `datetime.now(utc)` without migrating every stored column would break
+# comparisons against DB-read (naive) timestamps, so the current approach
+# is a deliberate, internally-consistent choice, not an oversight.

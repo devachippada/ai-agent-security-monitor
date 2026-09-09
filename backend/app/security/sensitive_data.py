@@ -77,7 +77,6 @@ def scan_text(text: str, context: str = "") -> SensitiveDataResult:
     score = 0.0
 
     for name, pattern in _PATTERNS.items():
-        matches = pattern.findall(text) if not pattern.groups else pattern.findall(text)
         found = bool(pattern.search(text))
         if not found:
             continue

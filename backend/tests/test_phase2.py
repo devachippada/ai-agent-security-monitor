@@ -2,9 +2,13 @@
 Phase 2 tests: behavioral anomaly detection, model-performance
 reporting, agent trace, and session listing/replay support.
 """
-from app.security.anomaly import get_anomaly_detector
-from app.security.synthetic_sessions import generate_normal_session, generate_abnormal_session
 import random
+
+from app.security.anomaly import get_anomaly_detector
+from app.security.synthetic_sessions import (
+    generate_abnormal_session,
+    generate_normal_session,
+)
 
 
 def test_anomaly_model_is_trained_and_loadable():

@@ -1,0 +1,11 @@
+backend/venv/
+**/__pycache__/
+backend/.pytest_cache/
+backend/data/security_monitor.db
+backend/models/*.joblib
+backend/models/*.json
+frontend/node_modules/
+frontend/dist/
+.git/
+*.log
+.DS_Store

@@ -17,7 +17,6 @@ the real subject under test, not the agent's natural-language skill.
 """
 import re
 from dataclasses import dataclass, field
-from typing import Optional
 
 from app.agent.synthetic_data import CUSTOMERS, find_knowledge_base_answer
 
@@ -36,10 +35,10 @@ TOOLS = [
 
 @dataclass
 class ProposedAction:
-    tool_name: Optional[str]
+    tool_name: str | None
     arguments: dict = field(default_factory=dict)
     agent_note: str = ""  # short, safe description of what FinAssist intends to do
-    direct_reply: Optional[str] = None  # used when no tool call is needed
+    direct_reply: str | None = None  # used when no tool call is needed
 
 
 _EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
@@ -48,7 +47,7 @@ _AMOUNT_RE = re.compile(r"\$?\s?([\d,]+(?:\.\d{2})?)\s*(?:dollars|usd)?", re.IGN
 _ALL_SCOPE_RE = re.compile(r"\b(all customers?|every customer|customer_id\s*=\s*ALL|entire (customer )?database)\b", re.IGNORECASE)
 
 
-def _extract_amount(text: str) -> Optional[float]:
+def _extract_amount(text: str) -> float | None:
     # Look for a dollar-prefixed amount first (more reliable than any number in the sentence)
     m = re.search(r"\$\s?([\d,]+(?:\.\d{2})?)", text)
     if not m:
@@ -61,7 +60,7 @@ def _extract_amount(text: str) -> Optional[float]:
     return None
 
 
-def _extract_customer_id(text: str) -> Optional[str]:
+def _extract_customer_id(text: str) -> str | None:
     m = _CUSTOMER_ID_RE.search(text)
     if m:
         return m.group(0).upper()
@@ -70,7 +69,7 @@ def _extract_customer_id(text: str) -> Optional[str]:
     return None
 
 
-def _extract_email(text: str) -> Optional[str]:
+def _extract_email(text: str) -> str | None:
     m = _EMAIL_RE.search(text)
     return m.group(0) if m else None
 
