@@ -31,6 +31,14 @@ jobs:
       - name: Build the labeled dataset
         run: python scripts/build_dataset.py
 
+      - name: Train and evaluate the anomaly model
+        # test_phase2.py exercises the real Isolation Forest, so it must
+        # exist before pytest runs -- same seeded, deterministic commands
+        # start.sh and the Dockerfile use.
+        run: |
+          python train_model.py --n-samples 2000 --contamination 0.05 --seed 42
+          python evaluate_model.py --n-normal 400 --n-abnormal 400 --seed 1337
+
       - name: Test (pytest)
         run: pytest -v
 
