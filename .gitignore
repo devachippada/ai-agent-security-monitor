@@ -1,0 +1,29 @@
+# --- Python / backend ---
+backend/venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+# Runtime database (created fresh by the app on first startup)
+backend/data/security_monitor.db
+
+# Trained model artifacts (reproducible via `python train_model.py` /
+# `python evaluate_model.py`, seeded so results are deterministic --
+# start.sh generates these automatically on first run)
+backend/models/*.joblib
+backend/models/*.json
+
+# --- Node / frontend ---
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# --- Logs from start.sh ---
+backend.log
+frontend.log
+*.log
+
+# --- OS / editor ---
+.DS_Store
+.vscode/
+.idea/
